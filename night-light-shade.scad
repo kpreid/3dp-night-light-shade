@@ -30,9 +30,7 @@ module main() {
     difference() {
         outer_cylinder();
 
-        // interior volume
-        translate([0, 0, -epsilon])
-        cylinder(r=center_to_wall - clear_wall, h=inside_height + mount_thick + epsilon);
+        inner_cylinder();
 
         socket_clearance_negative();
         
@@ -44,10 +42,9 @@ module main() {
             alt = is_even_row ? 0.5 : 0;
             
             angle_step = 360 / 12;
-            angle_range = z > socket_height ? 180 : 120;
-            step_range = floor(angle_range / angle_step);
-            for (i = [-step_range - alt:1:step_range + alt]) {
-                angular_position = i * angle_step + alt;
+            step_range = floor(360 / angle_step - alt);
+            for (i = [0:step_range]) {
+                angular_position = (i + alt) * angle_step;
                 scale([1, 1, 2])
                 rotate([90, 0, angular_position])
                 cylinder(d=4.8, h=center_to_wall * 1.2, $fn=4);
@@ -62,9 +59,14 @@ module outer_cylinder() {
     cylinder(r=center_to_wall, h=inside_height + mount_thick - epsilon);
 }
 
+module inner_cylinder() {
+    translate([0, 0, -epsilon])
+    cylinder(r=center_to_wall - clear_wall, h=inside_height + mount_thick + epsilon);
+}
+
 module socket_clearance_negative() {
-    translate([-mount_diameter / 2, 0, -epsilon])
     // construct a prism
+    translate([-mount_radius, 0, -epsilon])
     hull() {
         translate([0, center_to_wall + epsilon, 0])
         cube([mount_diameter, epsilon, socket_height + socket_slope_height]);
@@ -75,16 +77,32 @@ module socket_clearance_negative() {
 
 module socket_clearance_support() {
     // the thickness in Z (as defined) and Y (because the slope is 45°), chosen to give two filament strands
-    slope_axial_thickness = 0.8;  
+    slope_axial_thickness = 0.9;  
     
     intersection() {
-        translate([-mount_diameter / 2, 0, -epsilon])
-        // construct a sloped bar
-        hull() {
-            translate([0, center_to_wall + epsilon, socket_height + socket_slope_height])
-            cube([mount_diameter, epsilon, slope_axial_thickness]);
-            translate([0, y_position_of_entrance_sides, socket_height])
-            cube([mount_diameter, epsilon, slope_axial_thickness]);
+        union() {
+            // construct a sloped bar that sits above the prism of socket_clearance_negative
+            translate([-mount_radius, 0, -epsilon])
+            hull() {
+                translate([0, center_to_wall + epsilon, socket_height + socket_slope_height])
+                cube([mount_diameter, epsilon, slope_axial_thickness]);
+                translate([0, y_position_of_entrance_sides, socket_height])
+                cube([mount_diameter, epsilon, slope_axial_thickness]);
+            }
+        
+            // vertical supports (prohibit diamonds)
+            difference() {
+                support_width = mount_diameter + 4; 
+                support_height = socket_height + socket_slope_height;
+                translate([-support_width / 2, 0, -epsilon])
+                cube([support_width, center_to_wall, support_height]);
+
+                translate([-mount_radius, 0, -epsilon])
+                cube([mount_diameter, center_to_wall, support_height + epsilon]);
+                
+                socket_clearance_negative();
+                inner_cylinder();
+            }
         }
 
         outer_cylinder();
