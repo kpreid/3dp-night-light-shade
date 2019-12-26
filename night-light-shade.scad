@@ -16,7 +16,7 @@ $fn = 240;
 
 center_to_wall_interior = center_to_wall - clear_wall;
 mount_radius = mount_diameter / 2;
-y_position_of_entrance_sides = center_to_wall_interior * sqrt(1 - pow(mount_radius / center_to_wall, 2));
+y_position_of_entrance_sides = center_to_wall_interior * sqrt(1 - pow(mount_radius / center_to_wall_interior, 2));
 socket_slope_height = center_to_wall - y_position_of_entrance_sides;
 
 
@@ -61,7 +61,7 @@ module outer_cylinder() {
 
 module inner_cylinder() {
     translate([0, 0, -epsilon])
-    cylinder(r=center_to_wall - clear_wall, h=inside_height + mount_thick + epsilon);
+    cylinder(r=center_to_wall_interior, h=inside_height + mount_thick + epsilon);
 }
 
 module socket_clearance_negative() {
