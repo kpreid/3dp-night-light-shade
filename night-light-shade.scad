@@ -3,6 +3,7 @@ mount_diameter = 18;
 mount_straight_before_clip = 5.29;
 clip_nub = 1;
 mount_thick = 1.6;
+mount_entrance_height = 19;
 
 // Overall dimensions
 center_to_wall = 16;
@@ -30,18 +31,24 @@ module main() {
 
         // mount
         translate([-mount_diameter / 2, 0, -epsilon])
-        cube([mount_diameter, center_to_wall * 2, inside_height + mount_thick + epsilon]);
+        cube([mount_diameter, center_to_wall * 2, mount_entrance_height]);
         
         // decorations
         zstep = 8;
         for (z = [10:zstep:inside_height - 5])
         translate([0, 0, z]) {
-            alt = floor(z / zstep) % 2 == 0 ? 17.5 : 0;
+            is_even_row = floor(z / zstep) % 2 == 0;
+            alt = is_even_row ? 0.5 : 0;
             
-            for (x = [-105 + alt:35:105])
-            scale([1, 1, 2])
-            rotate([90, 0, x])
-            cylinder(d=4.8, h=center_to_wall * 1.2, $fn=4);
+            angle_step = 360 / 12;
+            angle_range = z > mount_entrance_height ? 180 : 120;
+            step_range = floor(angle_range / angle_step);
+            for (i = [-step_range - alt:1:step_range + alt]) {
+                angular_position = i * angle_step + alt;
+                scale([1, 1, 2])
+                rotate([90, 0, angular_position])
+                cylinder(d=4.8, h=center_to_wall * 1.2, $fn=4);
+            }
         }
     }
 }
