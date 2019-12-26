@@ -8,7 +8,7 @@ socket_height = 19;
 // Overall dimensions
 center_to_wall = 16;
 inside_height = 72;
-clear_wall = 0.45;
+clear_wall = 0.8;  // two extrusion widths (one is transparenter but raggedy)
 
 // It's-made-out-of-triangles-and-floats
 epsilon = 0.01;
