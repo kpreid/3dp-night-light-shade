@@ -1,4 +1,4 @@
-mount_diameter = 17.2;
+mount_diameter = 18;
 mount_straight_before_clip = 5.29;
 clip_nub = 1;
 mount_thick = 1.6;
