@@ -1,17 +1,22 @@
+// Dimensions for mount to night light base
 mount_diameter = 18;
 mount_straight_before_clip = 5.29;
 clip_nub = 1;
 mount_thick = 1.6;
-center_to_wall = 16;
 
+// Overall dimensions
+center_to_wall = 16;
 inside_height = 72;
 clear_wall = 0.45;
 
+// It's-made-out-of-triangles-and-floats
 epsilon = 0.01;
-$fn = 120;
+$fn = 240;
+
 
 main();
 //mount();
+
 
 module main() {
     mount();
